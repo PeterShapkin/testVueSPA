@@ -1,0 +1,126 @@
+<!-- Идейки -->
+<!-- ввести условную отрисовку при валидации: если поля заполнены, то запускаем осн. ф-ию валидации -->
+<!-- после ввода Username фокус перемещается на поле Password -->
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>theAPP</title>
+		<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+		<script type="text/javascript" src="data.json"></script>
+		<style>
+			form {
+				color: dimgray;
+				width:220px;
+				border: 2px solid grey;
+				border-radius:5px;
+				box-shadow:5px 5px 15px rgba(0,0,0,0.5);
+				display: flex;
+				flex-direction:column;
+				justify-content:center;
+				position: absolute;
+				left:37%;
+				top:30%;
+			}
+			.autho{
+				align-self:center;
+				margin: 10px;
+				border-radius:5px;
+			}
+			.in{
+				color: lightgoldenrodyellow;
+				background-color: orange;
+			}
+
+			#mainSvg {
+				position: absolute;
+				/*border: solid 10px black;*/
+				/*left: 25%;*/
+
+			}
+			svg {
+				position: absolute;
+				width:1000px;
+				height:1000px;
+				/*border: solid 10px black;*/
+				/*left: 25%;*/
+			}
+			#app {
+				position: absolute;
+	  			background: url(map.svg) no-repeat;
+	  			left: 25%;
+	  			width: 1000.12px;
+	  			height: 999.75px;
+			}
+			.viewer{
+				list-style-type: none;
+				/*width: 150px;*/
+	  			/*height: 80px;*/
+				/*border: solid 2px black;*/
+				position: fixed;
+				left:150px;
+				top:100px;
+			}
+			.newPoint{
+				width: 150px;
+	  			height: 80px;
+				/*border: solid 2px black;*/
+				position: fixed;
+				left:150px;
+				top:400px;
+			}
+			text{
+				/*fill:orange;*/
+				font: italic bold 16px serif;
+			}
+				/*.uspex {
+					display: none;
+				}*/
+		</style>
+
+	</head>
+	<body>
+		<script type="text/javascript">
+			(function (){
+	  				if(!localStorage['appMapData']){
+	  					localStorage['appMapData'] = '[[]]';
+	  					const appMapData = JSON.parse(localStorage['appMapData']);
+	  					appMapData[0].push({username:'test', password:'test'});
+	  					appMapData.push(data);
+	  					appMapData[1].forEach(function(item){
+							item.x = item.x*10;
+							item.y = item.y*10;
+						})
+	  					localStorage['appMapData'] = JSON.stringify(appMapData);
+	  					}
+	  				})();
+		</script>
+		<form>
+			<label class='autho'>Имя
+				<input class='autho' placeholder='Username' value='test'>
+			</label>
+			<label class='autho'>Пароль
+				<input class='autho'placeholder='Password' value='test'>
+			</label>
+			<button class='autho in' type='button' onclick='validate()'>Войти</button>  
+		</form>
+		
+		<script>
+		function validate(){
+			const inUs = document.getElementsByClassName('autho')[1];
+			const inPass = document.getElementsByClassName('autho')[3];;
+  					if(inPass.value && inUs.value){
+  						const appMapData = JSON.parse(localStorage['appMapData']); 					
+						if (appMapData[0][0].username === inPass.value && appMapData[0][0].password === inUs.value){
+							window.location.replace(window.location.href.slice(0,window.location.href.length-19)+'/app.html');
+							// 0,window.location.href.length-19
+						}
+
+						else {alert('Введите правильный пароль или логин!')}
+					}		
+  				}
+		
+		</script>
+	</body>
+</html>
+ 

@@ -1,0 +1,229 @@
+<!-- Идейки -->
+<!-- ввести условную отрисовку при валидации: если поля заполнены, то запускаем осн. ф-ию валидации -->
+<!-- после ввода Username фокус перемещается на поле Password -->
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>theAPP</title>
+		<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+		<script type="text/javascript" src="data.json"></script>
+		<style>	
+			#mainSvg {
+				position: absolute;
+				/*border: solid 10px black;*/
+				/*left: 25%;*/
+
+			}
+			svg {
+				position: absolute;
+				width:1000px;
+				height:1000px;
+				/*border: solid 10px black;*/
+				/*left: 25%;*/
+			}
+			#app {
+				position: absolute;
+	  			background: url(map.svg) no-repeat;
+	  			left: 25%;
+	  			width: 1000.12px;
+	  			height: 999.75px;
+			}
+			.back{
+				color: lightgoldenrodyellow;
+				font:  bold 25px  sans-serif;
+				position: fixed;
+				width: 200px;
+				height: 100px;
+				border-radius:10px;
+				background-color: orange;
+				
+				right:150px;
+				top:50px;
+			}
+			.viewer{
+				list-style-type: none;
+				/*width: 150px;*/
+	  			/*height: 80px;*/
+				/*border: solid 2px black;*/
+				position: fixed;
+				left:150px;
+				top:100px;
+			}
+			.newPoint{
+				width: 150px;
+	  			height: 80px;
+				/*border: solid 2px black;*/
+				position: fixed;
+				left:150px;
+				top:400px;
+			}
+			text{
+				font: italic bold 16px serif;
+			}
+		</style>
+
+	</head>
+	<body>
+		<script type="text/javascript">
+			(function (){
+	  				if(!localStorage['appMapData']){
+	  					localStorage['appMapData'] = '[[]]';
+	  					const appMapData = JSON.parse(localStorage['appMapData']);
+	  					appMapData[0].push({username:'test', password:'test'});
+	  					appMapData.push(data);
+	  					appMapData[1].forEach(function(item){
+							item.x = item.x*10;
+							item.y = item.y*10;
+						})
+	  					localStorage['appMapData'] = JSON.stringify(appMapData);
+	  					}
+	  				})();
+	  				
+	  		function goBack(){
+	  			window.location.replace(window.location.href.slice(0,window.location.href.length-9)+'/authorization.html');
+	  		}
+		</script>
+		
+		<button class='back' type='button' onclick='goBack()'>Назад</button>
+
+		<div id='app'> 	
+   			<viewer-comp 
+   				class='viewer'
+	   			:name='viewData.name'
+	   			:amount='viewData.amount'
+	   			:x='viewData.x'
+	   			:y='viewData.y'
+	   			></viewer-comp>
+			<new-point-comp class='newPoint'></new-point-comp>
+			<svg id='mainSvg'>
+				<mark-comp
+					v-for='i in points'
+					:name='i.name'	
+					:x='i.x'
+					:y='i.y'>
+   				</mark-comp>
+   			</svg>
+		</div>
+		<script>
+//VIEWER-----------------------------------------------
+		const viewer = Vue.component('viewer-comp',{
+			props:['name','amount','x','y'],
+			methods:{
+				delPoint(id){
+					const appMapData = JSON.parse(localStorage['appMapData']);
+					for(let i = 0; i < appMapData[1].length; i++){
+						if(appMapData[1][i].name === id  && app.points[i].name === id){
+							
+							appMapData[1].splice(i,1);
+							localStorage['appMapData'] = JSON.stringify(appMapData);
+							app.points.splice(i,1);
+
+							this.$refs.name.value = null; //new
+							this.$refs.amount.value = null;//new
+							this.$refs.x.value = null;//new
+							this.$refs.y.value = null; //new
+						}
+					}	
+				},
+				editPoint(id){
+					const appMapData = JSON.parse(localStorage['appMapData']);
+						for (let i = 0; i < app.points.length; i++){
+							if (app.points[i].name === app.viewData.name && appMapData[1][i].name === app.viewData.name){ 
+
+								app.points[i].name = id;
+								app.points[i].amount = this.amount;
+								app.points[i].x = this.x;
+								app.points[i].y = this.y;
+
+								appMapData[1][i].name = id;
+								appMapData[1][i].amount = this.amount;
+								appMapData[1][i].x = this.x;
+								appMapData[1][i].y = this.y;
+								localStorage['appMapData'] = JSON.stringify(appMapData);
+
+								
+							} 
+						}				
+					}				
+				},
+			template:`
+				<ul>
+					<li>Место:<input v-model='name' ref='name'></li>
+					<li>Количество товара:<input v-model='amount' ref='amount'></li>
+					<li>Координата X:<input v-model='x' ref='x'></li>
+					<li>Координата Y:<input v-model='y' ref='y'></li>
+					<button v-on:click='delPoint(name)'>Удалить</button><button v-on:click='editPoint(name)'>Редактировать</button>
+				</ul>
+
+			`
+		})
+//NEW_POINT-------------------------------------------------
+		const newPoint = Vue.component('new-point-comp',{
+			data(){
+				return {
+					pointData: {
+						name:null, 
+						amount:null, 
+						x:null, 
+						y:null 
+					}
+					
+				}	
+			},
+			methods:{
+				putIntoApp(){//свалидировать пустые значения!
+					app.points.unshift(this.pointData);
+
+					const appMapData = JSON.parse(localStorage['appMapData']);
+	  				appMapData[1].unshift(this.pointData);
+	  				localStorage['appMapData'] = JSON.stringify(appMapData);
+				}
+			},	
+			template:`
+				<div>
+					<label>Название<input v-model='pointData.name'></label>
+					<label>Количество товара<input v-model='pointData.amount'></label>
+					<label>Координата Х<input v-model='pointData.x'></label>
+					<label>Координата Y<input v-model='pointData.y'></label>
+					<button v-on:click='putIntoApp'>Создать</button>
+				</div>
+			`
+		})
+// MARK--------------------------------------------------------------------------------
+		const mark = Vue.component('mark-comp',{
+					props:['name','x','y'],
+			  		methods:{
+						showInfo(id){
+							const appMapData = JSON.parse(localStorage['appMapData']);
+							for (let i = 0; i < appMapData[1].length; i++){
+									if (appMapData[1][i].name === id){ 
+										app.viewData = appMapData[1][i];
+								} 
+							}
+						}
+					},
+					template:`
+						<g :id='name' v-on:click='showInfo(name)'>
+							<circle :cx='x' :cy='y' r='4' fill='red' stroke='yellow' ></circle>
+							<text :x='x' :y='y'>{{name}}</text>
+						</g>
+					`				
+			})
+// APP---------------------------------------------------
+		const app = new Vue({
+			data: {
+				points:[],
+				viewData:{},
+	  		},
+			created:function fromLStoData(){
+				const appMapData = JSON.parse(localStorage['appMapData']);
+				this.points = appMapData[1];
+			}	
+		}).$mount('#app');
+
+		Vue.config.devtools = true;
+		</script>
+	</body>
+</html>
+ 
