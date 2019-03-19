@@ -48,22 +48,33 @@ export default {
    			this.$refs.coordY.value = 'y:' + y;
 		},		
 		toAutho(){
-			router.replace('/autho');
+			router.replace('/');
 		},
 		resetMap(){
 			const appMapData = JSON.parse(localStorage['appMapData']);
 
-			appMapData.splice(1, 1, appMapData[2]);
-			this.$store.commit('SET_marks', appMapData[2]);
-			this.$store.commit('SET_viewData', {name:null,amount:null,x:null,y:null}); //new
+			appMapData.workModel = appMapData.baseModel;
+
+			this.$store.commit('SET_marks', appMapData.baseModel); 
+
+			this.$store.commit('SET_viewData', {name:null,amount:null,x:null,y:null}); 
 
 			localStorage['appMapData'] = JSON.stringify(appMapData);
 		}
 	},
   	created: function(){
 				const appMapData = JSON.parse(localStorage['appMapData']);
-				this.$store.commit('SET_marks', appMapData[1]);
-			}
+				this.$store.commit('SET_marks', appMapData.workModel); 
+			},
+	
+	beforeRouteLeave (to, from, next) {
+		const appMapData = JSON.parse(localStorage['appMapData']); 
+		appMapData.autho.enter = false;							
+		localStorage['appMapData'] = JSON.stringify(appMapData); 
+        next();
+        console.log('leave')
+  	}
+
 }
 </script>
 

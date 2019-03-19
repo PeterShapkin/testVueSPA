@@ -9,17 +9,17 @@
 				<li>Координата Y:</li>
 			</ul>
 			<ul>
-				<li v-show='!checked'>{{name}}</li><li v-show='checked'><input  :value='name' ref='name'></li>
-				<li v-show='!checked'>{{amount}}</li><li v-show='checked'><input :value='amount' ref='amount' type='number'></li>
-				<li v-show='!checked'>{{x}}</li><li v-show='checked'><input :value='x' ref='x' type='number'></li>
-				<li v-show='!checked'>{{y}}</li><li v-show='checked'><input :value='y' ref='y' type='number'></li>
+				<li v-show='!isEdited'>{{name}}</li><li v-show='isEdited'><input  :value='name' ref='name'></li>
+				<li v-show='!isEdited'>{{amount}}</li><li v-show='isEdited'><input :value='amount' ref='amount' type='number'></li>
+				<li v-show='!isEdited'>{{x}}</li><li v-show='isEdited'><input :value='x' ref='x' type='number'></li>
+				<li v-show='!isEdited'>{{y}}</li><li v-show='isEdited'><input :value='y' ref='y' type='number'></li>
 			</ul>
 		</div>
 <!-- ------------------------------------------------------------------------------ -->
 		<div class='viewerTune'>
-			<button v-show='checked' v-on:click='saveChangesToLS'>Сохранить</button>
-			<button v-show='!checked' v-on:click='deleteMark'>Удалить</button>
-			<label><input type='checkbox' v-model='checked'>Режим правки</label>
+			<button v-show='isEdited' v-on:click='saveChangesToLS'>Сохранить</button>
+			<button v-show='!isEdited' v-on:click='deleteMark'>Удалить</button>
+			<label><input type='checkbox' v-model='isEdited'>Режим правки</label>
 			
 		</div>
 <!-- ------------------------------------------------------------------------------ -->
@@ -32,7 +32,7 @@ import { mapState } from 'vuex';
 export default {
 	data(){
 		return {			
-			checked:false
+			isEdited:false 
 		}
 	},
 	computed:{
@@ -51,20 +51,22 @@ export default {
 			const y = this.$refs.y.value;
 
 			if(this.validate(name,amount,x,y)){
-				this.checked = false;
+				this.isEdited = false;
 				const currentViewData = this.$store.state.viewData;
 				const appMapData = JSON.parse(localStorage['appMapData']);
 
-				for (let i = 0; i < appMapData[1].length; i++){
-					if (appMapData[1][i].name === this.name){
+					for (let i = 0; i < appMapData.workModel.length; i++){ 
+						if (appMapData.workModel[i].name === this.name){ 
 
 						this.$store.commit('SET_viewData_name', this.$refs.name.value);
 						this.$store.commit('SET_viewData_amount', this.$refs.amount.value);
 						this.$store.commit('SET_viewData_x', this.$refs.x.value);
 						this.$store.commit('SET_viewData_y', this.$refs.y.value);
-						appMapData[1][i] = currentViewData;
 
-						localStorage['appMapData'] = JSON.stringify(appMapData);	
+						appMapData.workModel[i] = currentViewData; 
+
+						localStorage['appMapData'] = JSON.stringify(appMapData);
+						break 
 					}											
 				}
 			}
@@ -74,9 +76,11 @@ export default {
 			const currentViewData = this.$store.state.viewData;
 			const appMapData = JSON.parse(localStorage['appMapData']);
 
-			for (let i = 0; i < appMapData[1].length; i++){
-				if (appMapData[1][i].name === this.name){
-					appMapData[1].splice(i,1);
+				for (let i = 0; i < appMapData.workModel.length; i++){
+					if (appMapData.workModel[i].name === this.name){ 
+
+					appMapData.workModel.splice(i,1); 
+
 					this.$store.state.marks.splice(i,1);
 					this.$store.commit('SET_viewData_name', null);
 					this.$store.commit('SET_viewData_amount', null);
@@ -84,6 +88,7 @@ export default {
 					this.$store.commit('SET_viewData_y', null);
 
 					localStorage['appMapData'] = JSON.stringify(appMapData);
+					break 
 				}
 			}
 		},

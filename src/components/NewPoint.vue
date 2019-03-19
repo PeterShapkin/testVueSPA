@@ -33,7 +33,10 @@ export default {
 			if (this.validate(this.$refs.name.value, this.$refs.amount.value, this.$refs.x.value, this.$refs.y.value)){
 					this.$store.commit('ADD_mark', mark);
 					const appMapData = JSON.parse(localStorage['appMapData']);
-			  		appMapData[1].unshift(mark);
+
+			  		// appMapData[1].unshift(mark);
+			  		appMapData.workModel.unshift(mark); //main1.1.1
+
 			  		localStorage['appMapData'] = JSON.stringify(appMapData);
 			  		this.$refs.name.value = this.$refs.amount.value = this.$refs.x.value = this.$refs.y.value = null;
 			}

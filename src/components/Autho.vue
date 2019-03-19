@@ -1,12 +1,12 @@
 <template>
  	<form>
 		<label class='autho'>Имя
-			<input class='autho' placeholder='Username' ref='user' value='test'>
+			<input class='autho' placeholder='Username' v-model='username'> 
 		</label>
 		<label class='autho'>Пароль
-			<input class='autho' placeholder='Password' ref='password' value='test' type='password'>
+			<input class='autho' placeholder='Password' v-model='password' type='password'> 
 		</label>
-		<button class='autho in' type='button' v-on:click='validate()'>Войти</button>  
+		<button class='autho in' type='button' v-on:click='authorize()'>Войти</button>  
 	</form>
 </template>
 
@@ -14,12 +14,23 @@
 import router from '../router'
 
 export default {
+	data(){
+		return {
+			username: 'test',
+			password: 'test'
+		}
+	},
   	methods: {
-  		validate(){
-  			if(this.$refs.user.value && this.$refs.password.value){
+  		authorize(){
+  				if(this.username && this.password){ 
+
   				const appMapData = JSON.parse(localStorage['appMapData']);					
-				if (appMapData[0].username === this.$refs.user.value && appMapData[0].password === this.$refs.password.value){
-					router.replace('/map');
+					if (appMapData.autho.username === this.username && appMapData.autho.password === this.password){ 
+
+						appMapData.autho.enter = true; 
+						localStorage['appMapData'] = JSON.stringify(appMapData); 
+
+						router.replace('/map');
 				}
 				else { alert('Введите правильный пароль или логин!') }			
   			}
