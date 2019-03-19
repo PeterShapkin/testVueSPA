@@ -8,21 +8,25 @@ Vue.config.productionTip = false;
 
 (function (){
 	if(!localStorage['appMapData']){
-	  	localStorage['appMapData'] = '[]';
+		
+	  	localStorage['appMapData'] = '{}'; 
+
 	  	const appMapData = JSON.parse(localStorage['appMapData']);
 
-	  	appMapData.push({username:'test', password:'test'});
-	  	appMapData.push(model);
-	  	appMapData.push(model);
+	  	appMapData.autho = {username:'test', password:'test', enter: false}; 
 
-	  	appMapData[1].forEach(function(item){
+	  	appMapData.workModel = model; 
+
+	  	//добавляем данные точек ещё раз, недоступные для редактирования, - для выполнения сброса изменений; 
+	  	appMapData.baseModel = model; 
+
+	  	appMapData.workModel.forEach(function(item){ 
 			item.x = item.x*10;
 			item.y = item.y*10;
 			})
-	  	
+
 	  	localStorage['appMapData'] = JSON.stringify(appMapData);
 	  }
-	  else {(console.log('no'))}
 })();
 
 new Vue({

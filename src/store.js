@@ -11,7 +11,7 @@ export default new Vuex.Store({
       amount: null,
       x: null,
       y: null
-    }
+    },
   },
   mutations: {
     ADD_mark: (state, payload) => {
