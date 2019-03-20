@@ -13,7 +13,10 @@ Vue.use(Router)
     },
     {
       path: '/autho',
-      component: Autho
+      component: Autho,
+      meta: {
+        map: true
+      }
     },
     {
       path: '/map',
@@ -27,17 +30,19 @@ Vue.use(Router)
   router.beforeEach((to, from, next) => {
       const appMapData = JSON.parse(localStorage['appMapData']);
 
-      if(to.matched.some(record => record.meta.auth)){
+      if (to.matched.some(record => record.meta.auth)){
         if (appMapData.autho.enter === true){
           next();
         } 
         else { next('/') }
       }
-      else {
-        appMapData.autho.enter = false;
-        localStorage['appMapData'] = JSON.stringify(appMapData);
-        next()
-      }
+      else if (to.matched.some(record => record.meta.map)){
+        if (appMapData.autho.enter === true){
+          console.log('ok')
+          next('/map');
+        }
+        else { next() }
+      } 
     })
 
 export default router
