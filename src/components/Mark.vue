@@ -16,6 +16,8 @@ export default {
 			for (let i = 0; i < marks.length; i++){
 				if (marks[i].name === id){ 
 					this.$store.commit('SET_viewData', marks[i]);
+					this.$emit('sentMark', marks[i]); //передаём данные точки в компонент Map
+					break; 
 				} 
 			}
 		}

@@ -9,18 +9,17 @@
 				<li>Координата Y:</li>
 			</ul>
 			<ul>
-				<li v-show='!isEdited'>{{name}}</li><li v-show='isEdited'><input  :value='name' ref='name'></li>
-				<li v-show='!isEdited'>{{amount}}</li><li v-show='isEdited'><input :value='amount' ref='amount' type='number'></li>
-				<li v-show='!isEdited'>{{x}}</li><li v-show='isEdited'><input :value='x' ref='x' type='number'></li>
-				<li v-show='!isEdited'>{{y}}</li><li v-show='isEdited'><input :value='y' ref='y' type='number'></li>
+				<li v-show='!isEdited'>{{name}}</li><li v-show='isEdited'><input v-model='name'></li>
+				<li v-show='!isEdited'>{{amount}}</li><li v-show='isEdited'><input v-model='amount'></li>
+				<li v-show='!isEdited'>{{x}}</li><li v-show='isEdited'><input v-model='x'></li>
+				<li v-show='!isEdited'>{{y}}</li><li v-show='isEdited'><input v-model='y'></li>
 			</ul>
 		</div>
 <!-- ------------------------------------------------------------------------------ -->
 		<div class='viewerTune'>
 			<button v-show='isEdited' v-on:click='saveChangesToLS'>Сохранить</button>
 			<button v-show='!isEdited' v-on:click='deleteMark'>Удалить</button>
-			<label><input type='checkbox' v-model='isEdited'>Режим правки</label>
-			
+			<label><input type='checkbox' v-model='isEdited'>Режим правки</label>		
 		</div>
 <!-- ------------------------------------------------------------------------------ -->
 	</div>
@@ -30,38 +29,61 @@
 import { mapState } from 'vuex';
 
 export default {
+	props:['mark'], 
 	data(){
 		return {			
-			isEdited:false 
+			isEdited: false,
 		}
 	},
 	computed:{
-		...mapState({
-		name: state => state.viewData.name,
-		amount: state => state.viewData.amount,
-		x: state => state.viewData.x,
-		y: state => state.viewData.y
-			}) 
+		name: {
+    		get () {
+     			return this.$store.state.viewData.name
+    		},
+    		set (value) {
+      			this.$store.commit('SET_viewData_name', value)
+    		}
+  		},
+  		amount: {
+    		get () {
+     			return this.$store.state.viewData.amount
+    		},
+    		set (value) {
+      			this.$store.commit('SET_viewData_amount', value)
+    		}
+  		},
+  		x: {
+    		get () {
+     			return this.$store.state.viewData.x
+    		},
+    		set (value) {
+      			this.$store.commit('SET_viewData_x', value)
+    		}
+  		},
+  		y: {
+    		get () {
+     			return this.$store.state.viewData.y
+    		},
+    		set (value) {
+      			this.$store.commit('SET_viewData_y', value)
+    		}
+  		}
 	},
 	methods:{
 		saveChangesToLS(){
-			const name = this.$refs.name.value;
-			const amount = this.$refs.amount.value;
-			const x = this.$refs.x.value;
-			const y = this.$refs.y.value;
+			if(this.validate(this.name, this.amount, this.x, this.y)){
 
-			if(this.validate(name,amount,x,y)){
 				this.isEdited = false;
 				const currentViewData = this.$store.state.viewData;
 				const appMapData = JSON.parse(localStorage['appMapData']);
 
 					for (let i = 0; i < appMapData.workModel.length; i++){ 
-						if (appMapData.workModel[i].name === this.name){ 
+						if (appMapData.workModel[i].name === this.mark.name){ 
 
-						this.$store.commit('SET_viewData_name', this.$refs.name.value);
-						this.$store.commit('SET_viewData_amount', this.$refs.amount.value);
-						this.$store.commit('SET_viewData_x', this.$refs.x.value);
-						this.$store.commit('SET_viewData_y', this.$refs.y.value);
+						this.$store.commit('SET_viewData_name', this.name);
+						this.$store.commit('SET_viewData_amount', this.amount);
+						this.$store.commit('SET_viewData_x', this.x);
+						this.$store.commit('SET_viewData_y', this.y);
 
 						appMapData.workModel[i] = currentViewData; 
 
@@ -70,7 +92,7 @@ export default {
 					}											
 				}
 			}
-			else {alert('Заполните все строки! X и Y должны быть от 0 до 1000!')}
+			else {alert('- Заполните все строки!\n - X и Y должны быть от 0 до 1000!\n - Количество должно быть числом!')}
 		},
 		deleteMark(){
 			const currentViewData = this.$store.state.viewData;
@@ -94,7 +116,7 @@ export default {
 		},
 		validate(name,amount,x,y){
 			if (name && amount && x && y){
-				if ((0 <= +x && +x <= 1000) && (0 <= +y && +y <= 1000)){
+				if ((0 <= +x && +x <= 1000) && (0 <= +y && +y <= 1000) && (typeof amount === 'number')){
 					return true;
 				}
 				else {return false;}

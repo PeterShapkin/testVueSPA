@@ -1,9 +1,12 @@
 <template>
 	<div>
-		<Viewer/>
+		<Viewer
+			:mark='mark'
+			/>
 		<NewPoint/>
 		<svg id='map' v-on:mousemove='mapCoords'>
  			<Mark
+ 				v-on:sentMark='keepMark' 
  				v-for='i in getMarks'
 				:name='i.name'	
 				:x='i.x'
@@ -30,6 +33,11 @@ import Viewer from './Viewer.vue'
 import NewPoint from './NewPoint.vue'
 
 export default {
+	data(){
+		return {
+			mark: null
+		}
+	},
 	computed:{
 		getMarks(){
 			return this.$store.state.marks;
@@ -41,6 +49,9 @@ export default {
 		NewPoint
 	},
 	methods:{
+		keepMark(data){
+			this.mark = Object.assign({}, data); //делаем объект this.mark независимым от store.viewData 
+		},
 		mapCoords(event){
     		const x = event.offsetX; 
     		const y = event.offsetY; 
@@ -52,13 +63,9 @@ export default {
 		},
 		resetMap(){
 			const appMapData = JSON.parse(localStorage['appMapData']);
-
 			appMapData.workModel = appMapData.baseModel;
-
 			this.$store.commit('SET_marks', appMapData.baseModel); 
-
 			this.$store.commit('SET_viewData', {name:null,amount:null,x:null,y:null}); 
-
 			localStorage['appMapData'] = JSON.stringify(appMapData);
 		}
 	},
@@ -66,15 +73,6 @@ export default {
 				const appMapData = JSON.parse(localStorage['appMapData']);
 				this.$store.commit('SET_marks', appMapData.workModel); 
 			},
-	
-	beforeRouteLeave (to, from, next) {
-		const appMapData = JSON.parse(localStorage['appMapData']); 
-		appMapData.autho.enter = false;							
-		localStorage['appMapData'] = JSON.stringify(appMapData); 
-        next();
-        console.log('leave')
-  	}
-
 }
 </script>
 
