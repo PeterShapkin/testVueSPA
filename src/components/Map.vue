@@ -59,6 +59,10 @@ export default {
    			this.$refs.coordY.value = 'y:' + y;
 		},		
 		toAutho(){
+			const appMapData = JSON.parse(localStorage['appMapData']); 
+			appMapData.autho.enter = false;                            
+			localStorage['appMapData'] = JSON.stringify(appMapData);   
+
 			router.replace('/');
 		},
 		resetMap(){
